@@ -133,6 +133,7 @@ body {
     backdrop-filter: blur(10px);
     max-width: 900px;
     margin: 0 auto;
+    direction: rtl; /* Dirección de derecha a izquierda para hebreo */
 }
 
 .letter-box {
