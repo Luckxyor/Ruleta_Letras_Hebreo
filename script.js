@@ -46,6 +46,26 @@ function init() {
     drawWheel();
     addPointer();
     spinButton.addEventListener('click', spinWheel);
+    initBackgroundMusic();
+}
+
+// Inicializar música de fondo
+function initBackgroundMusic() {
+    const bgMusic = document.getElementById('backgroundMusic');
+    
+    // Intentar reproducir automáticamente
+    bgMusic.play().catch(error => {
+        // Si falla (navegadores bloquean autoplay), esperar a la primera interacción
+        console.log('Autoplay bloqueado, esperando interacción del usuario');
+        
+        // Reproducir al hacer clic en cualquier parte o al girar la ruleta
+        const playOnInteraction = () => {
+            bgMusic.play().catch(e => console.log('Error al reproducir:', e));
+            document.removeEventListener('click', playOnInteraction);
+        };
+        
+        document.addEventListener('click', playOnInteraction);
+    });
 }
 
 // Crear el indicador de la ruleta
@@ -93,7 +113,7 @@ function drawWheel() {
         ctx.font = 'bold 40px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('¡COMPLETADO! 🎉', centerX, centerY);
+        ctx.fillText('¡Bingo! 🎉', centerX, centerY);
         return;
     }
 
@@ -128,8 +148,8 @@ function drawWheel() {
         ctx.rotate(startAngle + anglePerSegment / 2);
         
         // Calcular tamaño de letra dinámico basado en número de segmentos
-        const baseFontSize = 30;
-        const maxFontSize = 70;
+        const baseFontSize = 45;
+        const maxFontSize = 95;
         const fontSize = baseFontSize + ((maxFontSize - baseFontSize) * (16 - numSegments) / 15);
         
         // Posición: empezar cerca del borde, acercarse al centro cuando quedan pocos
@@ -142,7 +162,7 @@ function drawWheel() {
         ctx.rotate(Math.PI / 2);
         
         ctx.fillStyle = 'white';
-        ctx.font = `bold ${fontSize}px Arial`;
+        ctx.font = `bold ${fontSize}px 'Fredoka One', 'Alef', Arial, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
@@ -174,6 +194,19 @@ function spinWheel() {
     spinButton.textContent = '🔄';
     canvas.style.cursor = 'wait';
 
+    // Bajar volumen del audio de fondo
+    const bgMusic = document.getElementById('backgroundMusic');
+    if (bgMusic) {
+        bgMusic.volume = 0.5;
+    }
+
+    // Reproducir sonido de girar
+    const spinSound = document.getElementById('spinSound');
+    if (spinSound) {
+        spinSound.currentTime = 0;
+        spinSound.play().catch(e => console.log('Error al reproducir sonido:', e));
+    }
+
     const numSegments = activeSegments.length;
     const anglePerSegment = (2 * Math.PI) / numSegments;
     
@@ -182,7 +215,7 @@ function spinWheel() {
     const randomAngle = Math.random() * 2 * Math.PI;
     const totalRotation = spins * 2 * Math.PI + randomAngle;
     
-    const duration = 4000; // 4 segundos
+    const duration = 3000; // 3 segundos
     const startTime = Date.now();
     const startRotation = rotation;
 
@@ -214,6 +247,12 @@ function spinWheel() {
             const selectedLetter = hebrewAlphabet[winningSegment];
             
             setTimeout(() => {
+                // Restaurar volumen del audio de fondo
+                const bgMusic = document.getElementById('backgroundMusic');
+                if (bgMusic) {
+                    bgMusic.volume = 1.0; // 100% del volumen
+                }
+
                 showLetter(selectedLetter, winningSegment);
                 isSpinning = false;
                 canvas.style.cursor = 'pointer';
@@ -229,9 +268,22 @@ function showLetter(letter, segmentIndex) {
     bigLetter.textContent = letter;
     letterDisplay.classList.remove('hidden');
     
+    // Bajar volumen del audio de fondo al 30%
+    const bgMusic = document.getElementById('backgroundMusic');
+    if (bgMusic) {
+        bgMusic.volume = 0.15; // 30% del volumen
+    }
+    
     // Después de 5 segundos, ocultar y procesar
     setTimeout(() => {
         hideLetter();
+        
+        // Restaurar volumen del audio de fondo al 100%
+        const bgMusic = document.getElementById('backgroundMusic');
+        if (bgMusic) {
+            bgMusic.volume = 1.0; // 100% del volumen
+        }
+        
         placeLetter(letter, segmentIndex);
         removeSegment(segmentIndex);
         
@@ -240,7 +292,7 @@ function showLetter(letter, segmentIndex) {
         if (activeSegments.length > 0) {
             spinButton.textContent = '🔄';
         } else {
-            spinButton.textContent = '🎉 ¡Completado!';
+            spinButton.textContent = '🎉 ¡Bingo!';
             spinButton.style.background = '#52B788';
         }
         

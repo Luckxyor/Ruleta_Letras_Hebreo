@@ -3,15 +3,17 @@
     padding: 0;
     box-sizing: border-box;
 }
+:root {
+    --main-font: 'Fredoka One', 'Alef', Arial, sans-serif;
+}
 
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: var(--main-font);
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
 }
 
 .container {

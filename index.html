@@ -4,12 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ruleta de Letras Hebreo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alef:wght@400;700&family=Fredoka+One&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Audio de fondo -->
+    <audio id="backgroundMusic" loop>
+        <source src="assets/AudioFondo.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Audio de girar ruleta -->
+    <audio id="spinSound">
+        <source src="assets/girarRuleta.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="container">
-        <h1 class="title">OTIOT</h1>
-        
         <!-- Letra Grande que aparece -->
         <div id="letterDisplay" class="letter-display hidden">
             <div class="letter-big" id="bigLetter"></div>
